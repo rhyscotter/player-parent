@@ -1,0 +1,1072 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>Parent & Player Accounts</title>
+  <style>
+    :root{
+      --bg:#050505;
+      --panel:rgba(17,17,17,.90);
+      --panel2:rgba(255,255,255,.04);
+      --border:rgba(255,255,255,.10);
+      --text:#ffffff;
+      --muted:rgba(255,255,255,.66);
+
+      --accent:#7B2EFF;
+      --accent2:#B266FF;
+      --clubGlow:rgba(123,46,255,.18);
+
+      --ok:#27d17f;
+      --warn:#ffb84d;
+      --danger:#ff5f6d;
+
+      --radius:26px;
+      --radiusSm:16px;
+      --shadow:0 20px 60px rgba(0,0,0,.35);
+    }
+
+    *{box-sizing:border-box}
+    html,body{margin:0;padding:0;background:transparent;color:var(--text);font-family:Arial,sans-serif}
+    body{
+      background:
+        radial-gradient(900px 500px at 12% -10%, rgba(255,255,255,.05), transparent 60%),
+        radial-gradient(700px 420px at 100% 0%, var(--clubGlow), transparent 55%),
+        linear-gradient(180deg,#000 0%, #050505 100%);
+      min-height:100vh;
+      overflow-x:hidden;
+    }
+
+    .page{
+      max-width:1400px;
+      margin:0 auto;
+      padding:26px 22px 34px;
+      position:relative;
+    }
+
+    .ambient{
+      position:absolute;
+      inset:0;
+      pointer-events:none;
+      overflow:hidden;
+    }
+    .ambient::before,
+    .ambient::after{
+      content:"";
+      position:absolute;
+      border-radius:999px;
+      filter:blur(40px);
+      opacity:.45;
+    }
+    .ambient::before{
+      width:280px;height:280px;
+      left:-80px;top:-60px;
+      background:var(--clubGlow);
+    }
+    .ambient::after{
+      width:260px;height:260px;
+      right:-80px;top:40px;
+      background:rgba(255,255,255,.06);
+    }
+
+    .hero{
+      position:relative;
+      border:1px solid var(--border);
+      background:
+        linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.02)),
+        rgba(10,10,10,.78);
+      border-radius:30px;
+      box-shadow:var(--shadow);
+      overflow:hidden;
+      padding:28px 28px 24px;
+      margin-bottom:18px;
+    }
+
+    .hero::before{
+      content:"";
+      position:absolute;
+      inset:-1px;
+      background:
+        radial-gradient(600px 200px at 0% 0%, var(--clubGlow), transparent 55%),
+        linear-gradient(90deg, transparent, rgba(255,255,255,.04), transparent);
+      pointer-events:none;
+      opacity:.9;
+    }
+
+    .hero-top{
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap:16px;
+      flex-wrap:wrap;
+      position:relative;
+      z-index:1;
+    }
+
+    .eyebrow{
+      display:inline-flex;
+      align-items:center;
+      gap:10px;
+      padding:8px 14px;
+      border:1px solid var(--border);
+      border-radius:999px;
+      color:#fff;
+      background:rgba(255,255,255,.04);
+      font-size:12px;
+      letter-spacing:.16em;
+      text-transform:uppercase;
+      margin-bottom:14px;
+    }
+
+    .eyebrow-dot{
+      width:8px;height:8px;border-radius:999px;
+      background:linear-gradient(180deg,var(--accent),var(--accent2));
+      box-shadow:0 0 16px var(--accent);
+      flex:0 0 auto;
+    }
+
+    h1{
+      margin:0;
+      font-family:Impact, Haettenschweiler, "Arial Narrow Bold", sans-serif;
+      font-size:clamp(38px,6vw,68px);
+      line-height:.95;
+      letter-spacing:.03em;
+      text-transform:uppercase;
+    }
+
+    .hero-copy{
+      max-width:850px;
+      color:var(--muted);
+      font-size:15px;
+      line-height:1.6;
+      margin-top:12px;
+    }
+
+    .hero-right{
+      display:flex;
+      flex-direction:column;
+      gap:12px;
+      min-width:250px;
+    }
+
+    .club-pill,
+    .mini-stat{
+      border:1px solid var(--border);
+      background:rgba(255,255,255,.04);
+      border-radius:18px;
+      padding:12px 14px;
+      backdrop-filter:blur(10px);
+    }
+
+    .club-pill .label,
+    .mini-stat .label{
+      color:var(--muted);
+      font-size:11px;
+      text-transform:uppercase;
+      letter-spacing:.14em;
+      margin-bottom:6px;
+    }
+
+    .club-pill .value,
+    .mini-stat .value{
+      font-weight:700;
+      font-size:15px;
+      word-break:break-word;
+    }
+
+    .underline{
+      width:140px;height:4px;border-radius:999px;margin-top:16px;
+      background:linear-gradient(90deg,var(--accent),var(--accent2),transparent);
+      box-shadow:0 0 26px var(--clubGlow);
+    }
+
+    .stack{
+      display:flex;
+      flex-direction:column;
+      gap:18px;
+    }
+
+    .card{
+      position:relative;
+      border:1px solid var(--border);
+      background:
+        linear-gradient(180deg, rgba(255,255,255,.035), rgba(255,255,255,.015)),
+        var(--panel);
+      border-radius:var(--radius);
+      box-shadow:var(--shadow);
+      overflow:hidden;
+    }
+
+    .card::before{
+      content:"";
+      position:absolute;
+      inset:0;
+      pointer-events:none;
+      background:
+        linear-gradient(135deg, rgba(255,255,255,.04), transparent 28%),
+        radial-gradient(500px 120px at 0% 0%, var(--clubGlow), transparent 55%);
+      opacity:.9;
+    }
+
+    .card-inner{
+      position:relative;
+      z-index:1;
+      padding:24px;
+    }
+
+    .card-head{
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap:14px;
+      margin-bottom:18px;
+      flex-wrap:wrap;
+    }
+
+    .card-title-wrap{
+      min-width:0;
+    }
+
+    .kicker{
+      color:var(--muted);
+      font-size:11px;
+      letter-spacing:.14em;
+      text-transform:uppercase;
+      margin-bottom:8px;
+    }
+
+    h2{
+      margin:0;
+      font-family:Impact, Haettenschweiler, "Arial Narrow Bold", sans-serif;
+      font-size:33px;
+      line-height:1;
+      letter-spacing:.03em;
+      text-transform:uppercase;
+    }
+
+    .card-sub{
+      margin-top:8px;
+      color:var(--muted);
+      line-height:1.55;
+      font-size:14px;
+      max-width:760px;
+    }
+
+    .section-badge{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      min-width:52px;
+      height:52px;
+      padding:0 14px;
+      border-radius:18px;
+      border:1px solid var(--border);
+      background:rgba(255,255,255,.045);
+      font-family:Impact, Haettenschweiler, "Arial Narrow Bold", sans-serif;
+      letter-spacing:.05em;
+      font-size:16px;
+      box-shadow:inset 0 0 0 1px rgba(255,255,255,.02);
+    }
+
+    .side-by-side{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:16px;
+    }
+
+    .panel{
+      border:1px solid var(--border);
+      background:var(--panel2);
+      border-radius:22px;
+      padding:18px;
+    }
+
+    .panel-title{
+      font-family:Impact, Haettenschweiler, "Arial Narrow Bold", sans-serif;
+      font-size:24px;
+      text-transform:uppercase;
+      letter-spacing:.03em;
+      margin:0 0 6px;
+    }
+
+    .panel-desc{
+      margin:0 0 16px;
+      color:var(--muted);
+      font-size:13px;
+      line-height:1.55;
+    }
+
+    .form-grid{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:12px;
+    }
+
+    .field{
+      display:flex;
+      flex-direction:column;
+      gap:8px;
+    }
+
+    .field.span-2{ grid-column:span 2; }
+
+    .field label{
+      font-size:11px;
+      letter-spacing:.13em;
+      text-transform:uppercase;
+      color:var(--muted);
+    }
+
+    input, select, textarea{
+      width:100%;
+      outline:none;
+      border:1px solid rgba(255,255,255,.11);
+      background:rgba(255,255,255,.05);
+      color:#fff;
+      border-radius:16px;
+      padding:14px 14px;
+      font-size:14px;
+      transition:border-color .18s ease, transform .18s ease, box-shadow .18s ease, background .18s ease;
+      backdrop-filter:blur(8px);
+    }
+
+    input::placeholder, textarea::placeholder{
+      color:rgba(255,255,255,.35);
+    }
+
+    input:focus, select:focus, textarea:focus{
+      border-color:rgba(255,255,255,.22);
+      box-shadow:0 0 0 3px rgba(255,255,255,.04), 0 0 0 1px var(--clubGlow) inset;
+      background:rgba(255,255,255,.065);
+      transform:translateY(-1px);
+    }
+
+    select option{
+      background:#111;
+      color:#fff;
+    }
+
+    .action-row{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      flex-wrap:wrap;
+      margin-top:16px;
+    }
+
+    .btn{
+      appearance:none;
+      border:none;
+      cursor:pointer;
+      border-radius:16px;
+      padding:14px 18px;
+      font-weight:800;
+      font-size:13px;
+      letter-spacing:.08em;
+      text-transform:uppercase;
+      transition:transform .18s ease, opacity .18s ease, box-shadow .18s ease, filter .18s ease;
+    }
+
+    .btn:hover{ transform:translateY(-1px) }
+    .btn:active{ transform:translateY(0) }
+    .btn:disabled{ opacity:.55; cursor:not-allowed; transform:none }
+
+    .btn-primary{
+      color:#fff;
+      background:linear-gradient(135deg,var(--accent),var(--accent2));
+      box-shadow:0 12px 28px var(--clubGlow);
+    }
+
+    .btn-secondary{
+      color:#fff;
+      background:rgba(255,255,255,.07);
+      border:1px solid var(--border);
+    }
+
+    .status{
+      margin-top:16px;
+      border:1px solid var(--border);
+      background:rgba(255,255,255,.045);
+      border-radius:18px;
+      padding:12px 14px;
+      min-height:54px;
+      display:flex;
+      align-items:center;
+      color:#fff;
+      font-size:14px;
+      line-height:1.45;
+      white-space:pre-wrap;
+      word-break:break-word;
+    }
+
+    .status.muted{ color:var(--muted) }
+    .status.ok{ border-color:rgba(39,209,127,.28); background:rgba(39,209,127,.08) }
+    .status.warn{ border-color:rgba(255,184,77,.28); background:rgba(255,184,77,.08) }
+    .status.error{ border-color:rgba(255,95,109,.28); background:rgba(255,95,109,.08) }
+
+    .info-grid{
+      display:grid;
+      grid-template-columns:repeat(3,1fr);
+      gap:12px;
+      margin-top:16px;
+    }
+
+    .info{
+      border:1px solid var(--border);
+      background:rgba(255,255,255,.04);
+      border-radius:18px;
+      padding:14px;
+    }
+
+    .info .label{
+      color:var(--muted);
+      font-size:11px;
+      text-transform:uppercase;
+      letter-spacing:.14em;
+      margin-bottom:8px;
+    }
+
+    .info .big{
+      font-family:Impact, Haettenschweiler, "Arial Narrow Bold", sans-serif;
+      font-size:30px;
+      line-height:1;
+      letter-spacing:.03em;
+    }
+
+    .sheet-box{
+      border:1px dashed rgba(255,255,255,.14);
+      background:rgba(255,255,255,.03);
+      border-radius:20px;
+      padding:16px;
+      margin-top:14px;
+    }
+
+    .drop-row{
+      display:grid;
+      grid-template-columns:1fr auto;
+      gap:10px;
+      align-items:end;
+    }
+
+    .hint{
+      color:var(--muted);
+      font-size:12px;
+      line-height:1.55;
+      margin-top:10px;
+    }
+
+    .preview-wrap{
+      margin-top:16px;
+      border:1px solid var(--border);
+      border-radius:20px;
+      overflow:hidden;
+      background:rgba(255,255,255,.03);
+    }
+
+    .preview-head{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      padding:12px 14px;
+      border-bottom:1px solid var(--border);
+      background:rgba(255,255,255,.035);
+    }
+
+    .preview-title{
+      font-size:12px;
+      text-transform:uppercase;
+      letter-spacing:.14em;
+      color:var(--muted);
+    }
+
+    .table-scroll{
+      overflow:auto;
+      max-height:360px;
+    }
+
+    table{
+      width:100%;
+      border-collapse:collapse;
+      min-width:820px;
+    }
+
+    th, td{
+      padding:12px 14px;
+      text-align:left;
+      border-bottom:1px solid rgba(255,255,255,.08);
+      font-size:13px;
+      vertical-align:top;
+    }
+
+    th{
+      position:sticky;
+      top:0;
+      z-index:2;
+      background:#111;
+      color:#fff;
+      text-transform:uppercase;
+      letter-spacing:.12em;
+      font-size:11px;
+    }
+
+    td{
+      color:rgba(255,255,255,.9);
+    }
+
+    .empty{
+      padding:26px 18px;
+      color:var(--muted);
+      text-align:center;
+      font-size:14px;
+    }
+
+    .footer-note{
+      margin-top:18px;
+      color:var(--muted);
+      font-size:12px;
+      line-height:1.6;
+      text-align:center;
+    }
+
+    @media (max-width: 980px){
+      .side-by-side,
+      .form-grid,
+      .info-grid,
+      .drop-row{
+        grid-template-columns:1fr;
+      }
+      .field.span-2{ grid-column:auto; }
+    }
+
+    @media (max-width: 860px){
+      .hero, .card-inner{ padding:20px; }
+      h2{ font-size:28px; }
+      .section-badge{ min-width:46px; height:46px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <div class="ambient"></div>
+
+    <section class="hero">
+      <div class="hero-top">
+        <div>
+          <div class="eyebrow">
+            <span class="eyebrow-dot"></span>
+            Parent & Player Accounts
+          </div>
+          <h1>ALL IN ONE<br>ACCOUNT HUB</h1>
+          <div class="underline"></div>
+          <div class="hero-copy">
+            Create parent accounts, add players to the correct team, and bulk import entire spreadsheets
+            in one place. This layout keeps your current function while matching the same premium dark
+            club-admin style as the other pages.
+          </div>
+        </div>
+
+        <div class="hero-right">
+          <div class="club-pill">
+            <div class="label">Club</div>
+            <div class="value" id="clubNameText">Loading club…</div>
+          </div>
+          <div class="mini-stat">
+            <div class="label">Mode</div>
+            <div class="value">Admin Account Management</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <div class="stack">
+
+      <!-- TOP CARD: PARENT + PLAYER SIDE BY SIDE -->
+      <section class="card">
+        <div class="card-inner">
+          <div class="card-head">
+            <div class="card-title-wrap">
+              <div class="kicker">Manual Creation</div>
+              <h2>Parent + Player</h2>
+              <div class="card-sub">
+                Create the parent first, then immediately create the linked player underneath that parent.
+                The parent email auto-carries into the player section after a successful parent invite.
+              </div>
+            </div>
+            <div class="section-badge">01</div>
+          </div>
+
+          <div class="side-by-side">
+            <div class="panel">
+              <h3 class="panel-title">Create Parent</h3>
+              <p class="panel-desc">
+                Sends the parent their setup / password email and prepares the account for player linking.
+              </p>
+
+              <div class="form-grid">
+                <div class="field span-2">
+                  <label for="parentEmail">Parent Email</label>
+                  <input id="parentEmail" type="email" placeholder="parent@email.com"/>
+                </div>
+
+                <div class="field">
+                  <label for="parentFirstName">First Name</label>
+                  <input id="parentFirstName" type="text" placeholder="First name"/>
+                </div>
+
+                <div class="field">
+                  <label for="parentLastName">Last Name</label>
+                  <input id="parentLastName" type="text" placeholder="Last name"/>
+                </div>
+
+                <div class="field span-2">
+                  <label for="parentPhone">Phone</label>
+                  <input id="parentPhone" type="text" placeholder="Phone number"/>
+                </div>
+              </div>
+
+              <div class="action-row">
+                <button class="btn btn-primary" id="createParentBtn">Create Parent</button>
+                <button class="btn btn-secondary" id="clearParentBtn" type="button">Clear</button>
+              </div>
+            </div>
+
+            <div class="panel">
+              <h3 class="panel-title">Create Player</h3>
+              <p class="panel-desc">
+                Saves the player under the selected parent email and assigns the player to the chosen team.
+              </p>
+
+              <div class="form-grid">
+                <div class="field span-2">
+                  <label for="childParentEmail">Parent Email</label>
+                  <input id="childParentEmail" type="email" placeholder="Parent email will autofill after invite"/>
+                </div>
+
+                <div class="field">
+                  <label for="childFirstName">Player First Name</label>
+                  <input id="childFirstName" type="text" placeholder="Player first name"/>
+                </div>
+
+                <div class="field">
+                  <label for="childLastName">Player Last Name</label>
+                  <input id="childLastName" type="text" placeholder="Player last name"/>
+                </div>
+
+                <div class="field">
+                  <label for="jerseyNumber">Jersey Number</label>
+                  <input id="jerseyNumber" type="text" placeholder="e.g. 7"/>
+                </div>
+
+                <div class="field">
+                  <label for="teamDropdown">Team</label>
+                  <select id="teamDropdown">
+                    <option value="">Loading teams…</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="action-row">
+                <button class="btn btn-primary" id="savePlayerBtn">Save Player</button>
+                <button class="btn btn-secondary" id="clearPlayerBtn" type="button">Clear</button>
+              </div>
+            </div>
+          </div>
+
+          <div id="statusBox" class="status muted">Ready.</div>
+        </div>
+      </section>
+
+      <!-- BOTTOM CARD: BULK SECTION -->
+      <section class="card">
+        <div class="card-inner">
+          <div class="card-head">
+            <div class="card-title-wrap">
+              <div class="kicker">Bulk Import</div>
+              <h2>Sheet + Preview</h2>
+              <div class="card-sub">
+                Load rows from a Google Sheet link or from a file upload workflow handled by the Wix page.
+                Preview the rows first, then run the full parent invite + player creation import.
+              </div>
+            </div>
+            <div class="section-badge">02</div>
+          </div>
+
+          <div class="panel">
+            <h3 class="panel-title">Load Spreadsheet</h3>
+            <p class="panel-desc">
+              Paste a Google Sheet URL below. If you want to keep the Wix upload-button workflow, leave file
+              handling inside the Wix page code and use this HTML for layout and preview only.
+            </p>
+
+            <div class="sheet-box">
+              <div class="drop-row">
+                <div class="field">
+                  <label for="googleSheetUrl">Google Sheet URL</label>
+                  <input id="googleSheetUrl" type="text" placeholder="Paste Google Sheet URL here"/>
+                </div>
+                <button class="btn btn-secondary" id="getRowsBtn" type="button">Get Rows / Preview</button>
+              </div>
+
+              <div class="hint">
+                Your Wix page code can still use the existing uploader backend flow. This UI just sends the action request
+                and displays the preview and summary returned from the page code.
+              </div>
+            </div>
+
+            <div class="info-grid">
+              <div class="info">
+                <div class="label">Rows Loaded</div>
+                <div class="big" id="rowsCount">0</div>
+              </div>
+              <div class="info">
+                <div class="label">Unique Parents</div>
+                <div class="big" id="parentsCount">0</div>
+              </div>
+              <div class="info">
+                <div class="label">Club In Sheet</div>
+                <div class="big" id="sheetClubText" style="font-size:22px;">—</div>
+              </div>
+            </div>
+
+            <div class="action-row">
+              <button class="btn btn-primary" id="bulkAddBtn" type="button">Run Bulk Add</button>
+              <button class="btn btn-secondary" id="clearBulkBtn" type="button">Clear Preview</button>
+            </div>
+
+            <div id="bulkStatusBox" class="status muted">No spreadsheet loaded.</div>
+
+            <div class="preview-wrap">
+              <div class="preview-head">
+                <div class="preview-title">Preview</div>
+                <div class="preview-title" id="previewMeta">0 rows</div>
+              </div>
+
+              <div class="table-scroll">
+                <table id="previewTable">
+                  <thead>
+                    <tr>
+                      <th>#</th>
+                      <th>Parent Email</th>
+                      <th>Parent Name</th>
+                      <th>Player Name</th>
+                      <th>Jersey</th>
+                      <th>Team ID</th>
+                      <th>Club</th>
+                    </tr>
+                  </thead>
+                  <tbody id="previewBody">
+                    <tr>
+                      <td colspan="7" class="empty">No rows loaded yet.</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <div class="footer-note">
+            Designed for the same admin workflow you already have: parent invite, player creation, team assignment,
+            and bulk spreadsheet import.
+          </div>
+        </div>
+      </section>
+
+    </div>
+  </div>
+
+  <script>
+    const state = {
+      clubSlug: "default",
+      clubName: "Default Club",
+      teams: [],
+      bulkRows: [],
+      busy: false
+    };
+
+    const $ = (id) => document.getElementById(id);
+
+    function norm(v){ return String(v || "").trim(); }
+    function lower(v){ return String(v || "").trim().toLowerCase(); }
+
+    function setBusy(on){
+      state.busy = !!on;
+      [
+        "createParentBtn","savePlayerBtn","getRowsBtn","bulkAddBtn",
+        "clearParentBtn","clearPlayerBtn","clearBulkBtn"
+      ].forEach(id => {
+        const btn = $(id);
+        if (btn) btn.disabled = !!on;
+      });
+    }
+
+    function setStatus(msg, kind = "muted"){
+      const box = $("statusBox");
+      if (!box) return;
+      box.className = `status ${kind}`;
+      box.textContent = msg || "";
+    }
+
+    function setBulkStatus(msg, kind = "muted"){
+      const box = $("bulkStatusBox");
+      if (!box) return;
+      box.className = `status ${kind}`;
+      box.textContent = msg || "";
+    }
+
+    function applyTheme(theme = {}){
+      const root = document.documentElement;
+
+      const accent = theme.colorPrimary || theme.primary || theme.accent || "#7B2EFF";
+      const accent2 = theme.colorOnDark || theme.secondary || theme.accent2 || "#B266FF";
+      const glow = theme.clubGlow || hexToRgba(accent, 0.18);
+
+      root.style.setProperty("--accent", accent);
+      root.style.setProperty("--accent2", accent2);
+      root.style.setProperty("--clubGlow", glow);
+
+      if (theme.clubSlug) state.clubSlug = theme.clubSlug;
+      if (theme.clubName) state.clubName = theme.clubName;
+
+      $("clubNameText").textContent = state.clubName || state.clubSlug || "Club";
+    }
+
+    function hexToRgba(hex, alpha = 0.18){
+      const h = String(hex || "").replace("#","").trim();
+      if (!/^[0-9a-fA-F]{6}$/.test(h)) return `rgba(123,46,255,${alpha})`;
+      const r = parseInt(h.slice(0,2), 16);
+      const g = parseInt(h.slice(2,4), 16);
+      const b = parseInt(h.slice(4,6), 16);
+      return `rgba(${r},${g},${b},${alpha})`;
+    }
+
+    function populateTeams(teams = []){
+      state.teams = Array.isArray(teams) ? teams : [];
+      const sel = $("teamDropdown");
+      if (!sel) return;
+
+      sel.innerHTML = "";
+
+      const first = document.createElement("option");
+      first.value = "";
+      first.textContent = state.teams.length ? "Select team" : "No teams found";
+      sel.appendChild(first);
+
+      state.teams.forEach(t => {
+        const opt = document.createElement("option");
+        opt.value = norm(t.value || t._id || t.id);
+        opt.textContent = norm(t.label || t.title || t.teamName || t.name || "Unnamed Team");
+        sel.appendChild(opt);
+      });
+    }
+
+    function renderPreview(rows = []){
+      state.bulkRows = Array.isArray(rows) ? rows : [];
+      const body = $("previewBody");
+      const meta = $("previewMeta");
+
+      const parentEmails = [...new Set(
+        state.bulkRows.map(r => lower(r.parentEmail)).filter(Boolean)
+      )];
+
+      const clubs = [...new Set(
+        state.bulkRows.map(r => norm(r.clubSlug)).filter(Boolean)
+      )];
+
+      $("rowsCount").textContent = String(state.bulkRows.length);
+      $("parentsCount").textContent = String(parentEmails.length);
+      $("sheetClubText").textContent = clubs[0] || "—";
+      meta.textContent = `${state.bulkRows.length} row${state.bulkRows.length === 1 ? "" : "s"}`;
+
+      body.innerHTML = "";
+
+      if (!state.bulkRows.length){
+        body.innerHTML = `<tr><td colspan="7" class="empty">No rows loaded yet.</td></tr>`;
+        return;
+      }
+
+      state.bulkRows.slice(0, 200).forEach((row, i) => {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td>${i + 1}</td>
+          <td>${escapeHtml(norm(row.parentEmail))}</td>
+          <td>${escapeHtml([norm(row.parentFirstName), norm(row.parentLastName)].filter(Boolean).join(" "))}</td>
+          <td>${escapeHtml([norm(row.playerFirstName), norm(row.playerLastName)].filter(Boolean).join(" "))}</td>
+          <td>${escapeHtml(norm(row.jerseyNumber))}</td>
+          <td>${escapeHtml(norm(row.teamId))}</td>
+          <td>${escapeHtml(norm(row.clubSlug))}</td>
+        `;
+        body.appendChild(tr);
+      });
+
+      if (state.bulkRows.length > 200){
+        const tr = document.createElement("tr");
+        tr.innerHTML = `<td colspan="7" class="empty">Showing first 200 rows only.</td>`;
+        body.appendChild(tr);
+      }
+    }
+
+    function escapeHtml(s){
+      return String(s || "")
+        .replaceAll("&","&amp;")
+        .replaceAll("<","&lt;")
+        .replaceAll(">","&gt;")
+        .replaceAll('"',"&quot;")
+        .replaceAll("'","&#039;");
+    }
+
+    function clearParentForm(){
+      $("parentEmail").value = "";
+      $("parentFirstName").value = "";
+      $("parentLastName").value = "";
+      $("parentPhone").value = "";
+    }
+
+    function clearPlayerForm(){
+      $("childParentEmail").value = "";
+      $("childFirstName").value = "";
+      $("childLastName").value = "";
+      $("jerseyNumber").value = "";
+      $("teamDropdown").value = "";
+    }
+
+    function clearBulk(){
+      $("googleSheetUrl").value = "";
+      renderPreview([]);
+      setBulkStatus("No spreadsheet loaded.", "muted");
+    }
+
+    function send(type, payload = {}){
+      window.parent.postMessage({ type, ...payload }, "*");
+    }
+
+    $("createParentBtn").addEventListener("click", () => {
+      send("CREATE_PARENT", {
+        email: lower($("parentEmail").value),
+        firstName: norm($("parentFirstName").value),
+        lastName: norm($("parentLastName").value),
+        phone: norm($("parentPhone").value)
+      });
+    });
+
+    $("savePlayerBtn").addEventListener("click", () => {
+      send("SAVE_PLAYER", {
+        parentEmail: lower($("childParentEmail").value),
+        childFirstName: norm($("childFirstName").value),
+        childLastName: norm($("childLastName").value),
+        jerseyNumber: norm($("jerseyNumber").value),
+        teamId: norm($("teamDropdown").value)
+      });
+    });
+
+    $("getRowsBtn").addEventListener("click", () => {
+      send("BULK_GET_ROWS", {
+        googleSheetUrl: norm($("googleSheetUrl").value)
+      });
+    });
+
+    $("bulkAddBtn").addEventListener("click", () => {
+      send("BULK_ADD", {
+        rows: state.bulkRows
+      });
+    });
+
+    $("clearParentBtn").addEventListener("click", clearParentForm);
+    $("clearPlayerBtn").addEventListener("click", clearPlayerForm);
+    $("clearBulkBtn").addEventListener("click", clearBulk);
+
+    window.addEventListener("message", (event) => {
+      const data = event.data || {};
+      const type = data.type || "";
+
+      if (type === "INIT"){
+        applyTheme(data.theme || {});
+        if (data.clubSlug) state.clubSlug = data.clubSlug;
+        if (data.clubName) state.clubName = data.clubName;
+        $("clubNameText").textContent = data.clubName || data.clubSlug || "Club";
+        if (Array.isArray(data.teams)) populateTeams(data.teams);
+        if (data.status) setStatus(data.status, "muted");
+        if (data.bulkStatus) setBulkStatus(data.bulkStatus, "muted");
+      }
+
+      if (type === "APPLY_THEME"){
+        applyTheme(data.theme || data);
+      }
+
+      if (type === "TEAMS_LOADED"){
+        populateTeams(data.teams || []);
+      }
+
+      if (type === "STATUS"){
+        setStatus(
+          data.message || "",
+          data.kind || inferStatusKind(data.message || "")
+        );
+      }
+
+      if (type === "BULK_STATUS"){
+        setBulkStatus(
+          data.message || "",
+          data.kind || inferStatusKind(data.message || "")
+        );
+      }
+
+      if (type === "BULK_PREVIEW"){
+        if (Array.isArray(data.rows)) renderPreview(data.rows);
+        if (data.message) setBulkStatus(data.message, data.kind || "ok");
+      }
+
+      if (type === "PARENT_CREATED"){
+        if (data.email){
+          $("childParentEmail").value = lower(data.email);
+        }
+        if (data.message){
+          setStatus(data.message, data.kind || "ok");
+        }
+      }
+
+      if (type === "PLAYER_CREATED"){
+        if (data.message){
+          setStatus(data.message, data.kind || "ok");
+        }
+      }
+
+      if (type === "SET_BUSY"){
+        setBusy(!!data.busy);
+      }
+    });
+
+    function inferStatusKind(msg){
+      const s = lower(msg);
+      if (!s) return "muted";
+      if (s.includes("failed") || s.includes("error") || s.includes("missing")) return "error";
+      if (s.includes("done") || s.includes("created") || s.includes("saved") || s.includes("success")) return "ok";
+      if (s.includes("warning") || s.includes("multiple clubs") || s.includes("check")) return "warn";
+      return "muted";
+    }
+
+    function parseHashTheme(){
+      try{
+        const raw = (location.hash || "").replace(/^#/,"");
+        const p = new URLSearchParams(raw);
+        const theme = {
+          clubSlug: p.get("clubSlug") || "",
+          clubName: p.get("clubName") || "",
+          colorPrimary: p.get("accent") || "",
+          colorOnDark: p.get("accent2") || "",
+          clubGlow: p.get("glow") || ""
+        };
+        if (theme.clubSlug || theme.colorPrimary || theme.colorOnDark){
+          applyTheme(theme);
+        }
+      } catch(_) {}
+    }
+
+    parseHashTheme();
+
+    send("IFRAME_READY", {
+      wants: ["theme","teams","club","status","bulk"]
+    });
+  </script>
+</body>
+</html>
