@@ -11,7 +11,6 @@
     --text:#fff;
     --muted:rgba(255,255,255,.62);
 
-    /* overridden by club theme */
     --accent:#7B2EFF;
     --accent2:#B266FF;
     --clubGlow:rgba(123,46,255,.18);
@@ -231,6 +230,9 @@
   input::placeholder, textarea::placeholder{
     color:rgba(255,255,255,.35);
   }
+  input[type="date"]{
+    color-scheme:dark;
+  }
   select option{
     background:#111;
     color:#fff;
@@ -429,7 +431,6 @@
 
       <div class="grid">
         <div class="manualGrid">
-          <!-- Parent -->
           <div class="panel">
             <div class="panelInner">
               <div class="h2">Create Parent</div>
@@ -464,7 +465,6 @@
             </div>
           </div>
 
-          <!-- Player -->
           <div class="panel">
             <div class="panelInner">
               <div class="h2">Create Player</div>
@@ -492,6 +492,11 @@
                 </div>
 
                 <div class="field">
+                  <div class="label">Date of Birth</div>
+                  <input id="dob" type="date"/>
+                </div>
+
+                <div class="field span2">
                   <div class="label">Team</div>
                   <select id="teamDropdown">
                     <option value="">Loading teams…</option>
@@ -737,6 +742,7 @@
     $("childFirstName").value = "";
     $("childLastName").value = "";
     $("jerseyNumber").value = "";
+    $("dob").value = "";
     $("teamDropdown").value = "";
   }
 
@@ -765,7 +771,8 @@
       childFirstName: norm($("childFirstName").value),
       childLastName: norm($("childLastName").value),
       jerseyNumber: norm($("jerseyNumber").value),
-      teamId: norm($("teamDropdown").value)
+      teamId: norm($("teamDropdown").value),
+      dob: $("dob").value
     });
   });
 
